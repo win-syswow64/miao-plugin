@@ -9,7 +9,7 @@ import { MiaoError, Meta, Common } from '#miao'
 import { miaoPath } from '#miao.path'
 
 export default class ProfileDmg extends Base {
-  constructor (profile = {}, game = 'gs') {
+  constructor(profile = {}, game = 'gs') {
     super()
     this.profile = profile
     this.game = game
@@ -20,7 +20,7 @@ export default class ProfileDmg extends Base {
     }
   }
 
-  static dmgRulePath (name, game = 'gs') {
+  static dmgRulePath(name, game = 'gs') {
     let dmgFile = [
       { file: 'calc_user', name: '自定义伤害' },
       { file: 'calc_auto', name: '组团伤害', test: () => Common.cfg('teamCalc') },
@@ -39,7 +39,7 @@ export default class ProfileDmg extends Base {
   }
 
   // 获取天赋数据
-  talent () {
+  talent() {
     let char = this.char
     let profile = this.profile
     let ret = {}
@@ -47,9 +47,9 @@ export default class ProfileDmg extends Base {
     ret.talentLevel = talentData
     let detail = char.detail
     let { isSr, isGs } = this
-    lodash.forEach((isSr ? 'a,a2,e,e1,e2,q,q2,t,t2,me,me2,mt,mt1,mt2' : 'a,e,q').split(','), (key) => {
+    lodash.forEach((isSr ? "a,a2,e,e1,e2,q,q2,t,t2,me,me2,me2list,mt,mt1,mt2" : "a,e,q").split(","), (key) => {
       let level = lodash.isNumber(talentData[key]) ? talentData[key] : (talentData[key]?.level || 1)
-      let keyRet = /^(a|e|q|t|me|mt)(1|2)$/.exec(key)
+      let keyRet = /^(a|e|q|t|me|mt)(1|2)(list)?$/.exec(key)
       if (keyRet) {
         let tmpKey = keyRet[1]
         level = lodash.isNumber(talentData[tmpKey]) ? talentData[tmpKey] : (talentData[tmpKey]?.level || 1)
@@ -60,16 +60,25 @@ export default class ProfileDmg extends Base {
           map[key] = ds[level - 1]
         })
       } else if (isSr && detail.talent && detail.talent[key]) {
-        lodash.forEach(detail.talent[key].tables, (ds) => {
-          map[ds.name] = ds.values[level - 1]
-        })
+        if (key === "me2list") {
+          lodash.forEach(detail.talent.me2list, (ds, idx) => {
+            map[idx] = {}
+            lodash.forEach(ds.tables, (table) => {
+              map[idx][table.name] = table.values[level - 1]
+            })
+          })
+        } else {
+          lodash.forEach(detail.talent[key].tables, (ds) => {
+            map[ds.name] = ds.values[level - 1]
+          })
+        }
       }
       ret[key] = map
     })
     return ret
   }
 
-  trees () {
+  trees() {
     let ret = {}
     let reg = /1?\d{4}(\d{3})/
     lodash.forEach(this.profile.trees, (t) => {
@@ -82,11 +91,11 @@ export default class ProfileDmg extends Base {
   }
 
   // 获取buff列表
-  getBuffs (buffs) {
+  getBuffs(buffs) {
     return DmgBuffs.getBuffs(this.profile, buffs, this.game)
   }
 
-  async getCalcRule () {
+  async getCalcRule() {
     let ruleName = this.char?.name
     if ([10000005, 10000007, 20000000].includes(this.char.id * 1)) {
       ruleName = `旅行者/${this.profile.elem}`
@@ -112,7 +121,7 @@ export default class ProfileDmg extends Base {
     return false
   }
 
-  async calcData ({ enemyLv = 103, mode = 'profile', dmgIdx = 0, idxIsInput = false }) {
+  async calcData({ enemyLv = 103, mode = 'profile', dmgIdx = 0, idxIsInput = false }) {
     if (!this.char || !this.profile) {
       return false
     }
@@ -127,7 +136,6 @@ export default class ProfileDmg extends Base {
     let { createdBy, buffs, details, defParams, mainAttr, defDmgIdx, defDmgKey, enemyName } = charCalcData
 
     let talent = this.talent()
-
     let meta = {
       characterName: this.char?.name,
       uid: profile.uid,
