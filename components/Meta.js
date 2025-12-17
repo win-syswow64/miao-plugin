@@ -4,7 +4,7 @@ import lodash from 'lodash'
 const MetaStore = {}
 
 class MetaData {
-  constructor (game = 'gs', type = '') {
+  constructor(game = 'gs', type = '') {
     this.game = game
     this.type = type
     this.data = {}
@@ -15,7 +15,7 @@ class MetaData {
   }
 
   // 添加数据
-  addData (datas, pk = 'id') {
+  addData(datas, pk = 'id') {
     let { data, alias } = this
     lodash.forEach(datas, (ds, id) => {
       id = ds[pk] || id
@@ -26,7 +26,7 @@ class MetaData {
     })
   }
 
-  addDataItem (id, ds) {
+  addDataItem(id, ds) {
     let { data, alias } = this
     data[id] = ds
     alias[id] = id
@@ -36,7 +36,7 @@ class MetaData {
   }
 
   // 添加简写
-  addAbbr (ds) {
+  addAbbr(ds) {
     let { data, alias, alias2 } = this
     lodash.forEach(ds, (txt, id) => {
       id = alias[id] || alias2[id] || id
@@ -48,7 +48,7 @@ class MetaData {
   }
 
   // 添加别名
-  addAlias (ds, isPrivate = false) {
+  addAlias(ds, isPrivate = false) {
     let { alias, alias2 } = this
     lodash.forEach(ds, (txt, id) => {
       lodash.forEach((txt + '').split(','), (t) => {
@@ -58,20 +58,20 @@ class MetaData {
   }
 
   // 注册别名Fn
-  addAliasFn (fn) {
+  addAliasFn(fn) {
     if (fn) {
       this.aliasFn = fn
     }
   }
 
-  addMeta (cfgMap) {
+  addMeta(cfgMap) {
     let { cfg } = this
     lodash.forEach(cfgMap, (v, k) => {
       cfg[k] = v
     })
   }
 
-  getId (txt) {
+  getId(txt) {
     txt = lodash.trim(txt + '').toLowerCase()
     let { data, alias, alias2, aliasFn } = this
     if (data[txt]) {
@@ -89,28 +89,28 @@ class MetaData {
     return false
   }
 
-  getData (txt) {
+  getData(txt) {
     let id = this.getId(txt)
     let { data } = this
     return data[id] || null
   }
 
-  getMeta (key = '') {
+  getMeta(key = '') {
     if (!key) {
       return this.cfg
     }
     return this.cfg[key]
   }
 
-  getIds () {
+  getIds() {
     return lodash.keys(this.data)
   }
 
-  getAlias () {
+  getAlias() {
     return lodash.keys(this.alias)
   }
 
-  async forEach (fn) {
+  async forEach(fn) {
     for (let id in this.data) {
       let ds = this.data[id]
       let ret = fn(ds, id)
@@ -133,13 +133,13 @@ const MetaFn = (fnKey) => {
 }
 
 const Meta = {
-  addAliasFn (game, type, fn) {
+  addAliasFn(game, type, fn) {
     let meta = Meta.create(game, type)
     meta.addAliasFn(fn)
   },
 
   // 获取存储
-  create (game, type) {
+  create(game, type) {
     let key = `${game}.${type}`
     if (!MetaStore[key]) {
       MetaStore[key] = new MetaData(game, type)
@@ -151,12 +151,12 @@ const Meta = {
   getData: MetaFn('getData'),
   getMeta: MetaFn('getMeta'),
   getAlias: MetaFn('getAlias'),
-  async forEach (game, type, fn) {
+  async forEach(game, type, fn) {
     let meta = Meta.create(game, type)
     meta.forEach(fn)
   },
   // 在各个游戏内匹配，以传入的game优先
-  matchGame (game = 'gs', type, txt) {
+  matchGame(game = 'gs', type, txt) {
     txt = lodash.trim(txt + '').toLowerCase()
     let games = (!game || game === 'gs') ? ['gs', 'sr'] : ['sr', 'gs']
     for (let currGame of games) {

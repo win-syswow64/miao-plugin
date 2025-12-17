@@ -22,7 +22,7 @@ class Character extends Base {
   // 默认获取的数据
   static _dataKey = 'id,name,abbr,title,star,elem,allegiance,weapon,birthday,astro,cncv,jpcv,desc,talentCons'
 
-  constructor ({ id, name = '', elem = '', game = 'gs' }) {
+  constructor({ id, name = '', elem = '', game = 'gs' }) {
     super()
     // 检查缓存
     let cacheObj = this._getCache(CharId.isTraveler(id) ? `character:${id}:${elem || 'anemo'}` : `character:${id}`)
@@ -48,12 +48,12 @@ class Character extends Base {
   }
 
   // 是否为官方角色
-  get isOfficial () {
+  get isOfficial() {
     return this.game === 'sr' || /[12]0\d{6}/.test(this._id)
   }
 
   // 是否为实装官方角色
-  get isRelease () {
+  get isRelease() {
     if (this.isCustom) {
       return false
     }
@@ -64,15 +64,15 @@ class Character extends Base {
   }
 
   // 是否为自定义角色
-  get isCustom () {
+  get isCustom() {
     return !this.isOfficial
   }
 
-  get id () {
+  get id() {
     return this.isCustom ? this._id : this._id * 1
   }
 
-  _get (key) {
+  _get(key) {
     if (metaKey.includes(key)) {
       return this.meta[key]
     }
@@ -82,28 +82,28 @@ class Character extends Base {
   }
 
   // 获取短名字
-  get sName () {
+  get sName() {
     let name = this.name
     let abbr = this.abbr
     return name.length < 4 ? name : (abbr || name)
   }
 
   // 是否是旅行者
-  get isTraveler () {
+  get isTraveler() {
     return this.isGs && CharId.isTraveler(this.id)
   }
 
   // 是否是开拓者
-  get isTrailblazer () {
+  get isTrailblazer() {
     return this.isSr && CharId.isTrailblazer(this.id)
   }
 
-  get weaponType () {
+  get weaponType() {
     return this.weapon
   }
 
   // 获取武器类型
-  get weaponTypeName () {
+  get weaponTypeName() {
     if (this.isSr) {
       return this.weapon
     }
@@ -119,7 +119,7 @@ class Character extends Base {
   }
 
   // 获取元素名称
-  get elemName () {
+  get elemName() {
     if (this.isSr) {
       return this.elem
     }
@@ -127,22 +127,22 @@ class Character extends Base {
   }
 
   // 获取角色描述
-  get desc () {
+  get desc() {
     return CharMeta.getDesc(this.meta?._detail?.desc || '')
   }
 
   // 获取头像
-  get face () {
+  get face() {
     return this.getImgs().face
   }
 
   // 获取Q版头像
-  get qFace () {
+  get qFace() {
     return this.getImgs().qFace
   }
 
   // 获取侧脸图像
-  get side () {
+  get side() {
     if (this.isSr) {
       return this.getImgs().face
     }
@@ -150,22 +150,22 @@ class Character extends Base {
   }
 
   // gacha图像
-  get gacha () {
+  get gacha() {
     return this.getImgs().gacha
   }
 
   // 获取character相关图像
-  get imgs () {
+  get imgs() {
     return this.getImgs()
   }
 
   // 获取详情数据
-  get detail () {
+  get detail() {
     return this.getDetail()
   }
 
   // 获取命座天赋等级
-  get talentCons () {
+  get talentCons() {
     if (this.isSr) {
       return this.meta?.talentCons || {}
     }
@@ -176,7 +176,7 @@ class Character extends Base {
   }
 
   // 获取生日
-  get birthday () {
+  get birthday() {
     let birth = this.birth
     if (!birth) {
       return ''
@@ -186,7 +186,7 @@ class Character extends Base {
   }
 
   // 基于角色名获取Character
-  static get (val, game = 'gs') {
+  static get(val, game = 'gs') {
     if (lodash.isString(val)) {
       let travelerName = /旅行者|主角?|空|荧|爷/g
       if (travelerName.test(val) && game === 'gs') {
@@ -201,12 +201,12 @@ class Character extends Base {
     return new Character(id)
   }
 
-  static sample (game = 'gs') {
+  static sample(game = 'gs') {
     let id = CharId.getRandomId(game)
     return Character.get(id)
   }
 
-  static forEach (fn, type = 'all', game = 'gs') {
+  static forEach(fn, type = 'all', game = 'gs') {
     let ids = Meta.getIds(game, 'char')
     lodash.forEach(ids, (id) => {
       let char = Character.get(id)
@@ -224,23 +224,23 @@ class Character extends Base {
   }
 
   // 获取排序ID
-  static sortIds (arr) {
+  static sortIds(arr) {
     return arr.sort((a, b) => a * 1 - b * 1)
   }
 
   // 获取attr列表
-  getAttrList () {
+  getAttrList() {
     let { baseAttr, growAttr } = this
     return CharMeta.getAttrList(baseAttr, growAttr, this.elemName)
   }
 
   // 获取素材
-  getMaterials (type = 'all') {
+  getMaterials(type = 'all') {
     return CharMeta.getMaterials(this, type)
   }
 
   // 获取角色character-img图片
-  getCardImg (se = false, def = true) {
+  getCardImg(se = false, def = true) {
     if (this.name === '旅行者') {
       return CharImg.getCardImg(['空', '荧'], se, def)
     }
@@ -248,11 +248,11 @@ class Character extends Base {
   }
 
   // 设置天赋数据
-  getAvatarTalent (talent = {}, cons = 0, mode = 'original') {
+  getAvatarTalent(talent = {}, cons = 0, mode = 'original') {
     return CharTalent.getAvatarTalent(this, talent, cons, mode)
   }
 
-  getTalentKey (id) {
+  getTalentKey(id) {
     if (this.talentId[id]) {
       return this.talentId[id]
     }
@@ -274,26 +274,26 @@ class Character extends Base {
   }
 
   // 检查老婆类型
-  checkWifeType (type) {
+  checkWifeType(type) {
     let { wifeData } = Meta.getMeta('gs', 'char')
     let key = ['girlfriend', 'boyfriend', 'daughter', 'son'][type] || 'girlfriend'
     return !!wifeData[key]?.[this.id]
   }
 
   // 检查时装
-  checkCostume (id) {
+  checkCostume(id) {
     let costume = this?.costume || []
     return costume.includes(id * 1)
   }
 
   // 判断是否为某种元素角色
-  isElem (elem = '') {
+  isElem(elem = '') {
     elem = elem.toLowerCase()
     return this.elem === elem || this.elemName === elem
   }
 
   // 获取角色插画
-  getImgs (costume = '') {
+  getImgs(costume = '') {
     if (lodash.isArray(costume)) {
       costume = costume[0]
     }
@@ -319,7 +319,7 @@ class Character extends Base {
   // 基于角色名获取Character
 
   // 获取详情数据
-  getDetail () {
+  getDetail() {
     if (this.meta?._detail) {
       return this.meta._detail
     }
@@ -337,14 +337,14 @@ class Character extends Base {
   }
 
   // 获取伤害计算配置
-  getCalcRule () {
+  getCalcRule() {
     if (!this._calcRule && this._calcRule !== false) {
       this._calcRule = CharCfg.getCalcRule(this)
     }
     return this._calcRule
   }
 
-  getArtisCfg () {
+  getArtisCfg() {
     if (!this._artisRule && this._artisRule !== false) {
       this._artisRule = CharCfg.getArtisCfg(this)
     }
@@ -357,7 +357,7 @@ class Character extends Base {
    * @param promote
    * @returns {{}|boolean}
    */
-  getLvAttr (level, promote) {
+  getLvAttr(level, promote) {
     let metaAttr = this.detail?.attr
     if (!metaAttr) {
       return false

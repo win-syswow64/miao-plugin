@@ -13,7 +13,7 @@ import MysAvatar from './avatar/MysAvatar.js'
 const charKey = 'name,abbr,sName,star,imgs,face,side,gacha,weaponTypeName'.split(',')
 
 export default class Avatar extends Base {
-  constructor (ds = {}, game = 'gs') {
+  constructor(ds = {}, game = 'gs') {
     super()
     let char = Character.get({ id: ds.id, elem: ds.elem })
     if (!char) {
@@ -27,15 +27,15 @@ export default class Avatar extends Base {
     this.setAvatar(ds)
   }
 
-  get hasTalent () {
+  get hasTalent() {
     return this.talent && !lodash.isEmpty(this.talent) && !!this._talent
   }
 
-  get name () {
+  get name() {
     return this.char?.name || ''
   }
 
-  get costume () {
+  get costume() {
     let costume = this._costume
     if (lodash.isArray(costume)) {
       costume = costume[0]
@@ -43,18 +43,18 @@ export default class Avatar extends Base {
     return costume
   }
 
-  get originalTalent () {
+  get originalTalent() {
     return lodash.mapValues(this.talent, (ds) => ds.original)
   }
 
   // 已经到达当前等级的最大天赋
-  get isMaxTalent () {
+  get isMaxTalent() {
     let maxLv = [1, 2, 4, 6, 8, 10]?.[this.promote - 1] || 10
     let minTalent = lodash.min(lodash.map(this.talent, (ds) => ds.original))
     return minTalent >= maxLv
   }
 
-  get mysArtis () {
+  get mysArtis() {
     return this._mysArtis
   }
 
@@ -62,22 +62,24 @@ export default class Avatar extends Base {
    * 获取圣遗物套装属性
    * @returns {boolean|*|{imgs: *[], names: *[], sets: {}, abbrs: *[], sName: string, name: (string|*)}|{}}
    */
-  get artisSet () {
+  get artisSet() {
     return this.mysArtis.getSetData()
   }
 
-  get dataSource () {
+  get dataSource() {
     return {
       enka: 'Enka.Network',
       miao: '喵喵Api',
       mgg: 'MiniGG-Api',
       hutao: 'Hutao-Enka',
       mys: '米游社',
-      homo: 'Mihomo'
+      homo: 'Mihomo',
+      customize: '预设面板',
+      share: '外部导入'
     }[this._source] || this._source
   }
 
-  get updateTime () {
+  get updateTime() {
     let time = this._time
     if (!time) {
       return ''
@@ -91,37 +93,37 @@ export default class Avatar extends Base {
     return ''
   }
 
-  get isAvatar () {
+  get isAvatar() {
     return true
   }
 
   // 是否是合法面板数据
-  get isProfile () {
+  get isProfile() {
     return ProfileAvatar.isProfile(this)
   }
 
   // profile.hasData 别名
-  get hasData () {
+  get hasData() {
     return !!(this.level > 1 || this?.weapon?.name)
   }
 
-  get imgs () {
+  get imgs() {
     return this.char.getImgs(this.costume) || {}
   }
 
-  get costumeSplash () {
+  get costumeSplash() {
     return ProfileAvatar.getCostumeSplash(this, this.game)
   }
 
-  get hasDmg () {
+  get hasDmg() {
     return this.isProfile && !!ProfileDmg.dmgRulePath(this.name, this.game)
   }
 
-  get artis () {
+  get artis() {
     return this._artis
   }
 
-  static create (ds, game = 'gs') {
+  static create(ds, game = 'gs') {
     let profile = new Avatar(ds, game)
     if (!profile) {
       return false
@@ -129,7 +131,7 @@ export default class Avatar extends Base {
     return profile
   }
 
-  _get (key) {
+  _get(key) {
     if (charKey.includes(key)) {
       return this.char[key]
     }
@@ -140,7 +142,7 @@ export default class Avatar extends Base {
    * @param ds
    * @param source
    */
-  setBasic (ds = {}, source = '') {
+  setBasic(ds = {}, source = '') {
     const now = this._now || (new Date()) * 1
     this.level = ds.lv || ds.level || this.level || 1
     this.cons = ds.cons || this.cons || 0
@@ -172,7 +174,7 @@ export default class Avatar extends Base {
   }
 
   // 星铁的行迹数据
-  setTrees (ds) {
+  setTrees(ds) {
     this.trees = []
     let prefix = ''
     let map = {}
@@ -195,7 +197,7 @@ export default class Avatar extends Base {
   }
 
   // 设置武器
-  setWeapon (ds = {}) {
+  setWeapon(ds = {}) {
     let w = Weapon.get(ds.name || ds.id, this.game)
     if (!w) {
       return false
@@ -214,7 +216,7 @@ export default class Avatar extends Base {
   }
 
   // 获取武器详情信息
-  getWeaponDetail () {
+  getWeaponDetail() {
     let ret = {
       ...this.weapon
     }
@@ -245,7 +247,7 @@ export default class Avatar extends Base {
   }
 
   // 设置天赋
-  setTalent (ds = false, mode = 'original', updateTime = '') {
+  setTalent(ds = false, mode = 'original', updateTime = '') {
     if (!this.char) {
       return false
     }
@@ -263,7 +265,7 @@ export default class Avatar extends Base {
     }
   }
 
-  getProfile () {
+  getProfile() {
     if (!this.isProfile) {
       return false
     }
@@ -271,12 +273,12 @@ export default class Avatar extends Base {
   }
 
   // 判断当前profileData是否具备有效圣遗物信息
-  hasArtis () {
+  hasArtis() {
     return this.isProfile && this.artis.length > 0
   }
 
   // 获取数据详情
-  getDetail (keys = '') {
+  getDetail(keys = '') {
     let imgs = this.char.getImgs(this.costume)
     if (this.isGs) {
       return {
@@ -291,7 +293,7 @@ export default class Avatar extends Base {
     }
   }
 
-  setAvatarBase (ds, source = '') {
+  setAvatarBase(ds, source = '') {
     this._now = new Date() * 1
     this.setBasic(ds, source)
     ds.weapon && this.setWeapon(ds.weapon)
@@ -302,7 +304,7 @@ export default class Avatar extends Base {
     delete this._now
   }
 
-  setAvatar (ds, source = '') {
+  setAvatar(ds, source = '') {
     this.setAvatarBase(ds, source)
     if (ds.artis && source !== 'mys') {
       this._artis.setArtisData(ds.artis)
@@ -310,7 +312,7 @@ export default class Avatar extends Base {
     this.calcAttr()
   }
 
-  calcAttr () {
+  calcAttr() {
     if (!this.isProfile) {
       return false
     }
@@ -319,11 +321,11 @@ export default class Avatar extends Base {
     this.base = attr.getBase()
   }
 
-  getArtis (isMysArtis = false) {
+  getArtis(isMysArtis = false) {
     return isMysArtis ? this._mysArtis : this._artis
   }
 
-  setArtis (ds = {}, isMysArtis = false) {
+  setArtis(ds = {}, isMysArtis = false) {
     let artis = this.getArtis(isMysArtis)
     artis.setArtisData(ds)
     if (!this._mysArtis.hasArtis) {
@@ -332,12 +334,12 @@ export default class Avatar extends Base {
   }
 
   // 获取当前profileData的圣遗物评分，withDetail=false仅返回简略信息
-  getArtisMark (withDetail = true) {
+  getArtisMark(withDetail = true) {
     return ArtisMark.getMarkDetail(this, withDetail)
   }
 
   // 计算当前profileData的伤害信息
-  async calcDmg ({ enemyLv = 103, mode = 'profile', dmgIdx = 0, idxIsInput = false }) {
+  async calcDmg({ enemyLv = 103, mode = 'profile', dmgIdx = 0, idxIsInput = false }) {
     if (!this.dmg || this.dmg._update !== this._update) {
       let ds = this.getData('id,level,elem,attr,cons,artis:artis.sets,trees,uid')
       ds.talent = lodash.mapValues(this.talent, 'level')
@@ -349,7 +351,7 @@ export default class Avatar extends Base {
   }
 
   // toJSON 供保存使用
-  toJSON () {
+  toJSON() {
     let keys = this.isGs
       ? 'name,id,elem,level,promote,fetter,costume,cons,talent:originalTalent'
       : 'name,id,elem,level,promote,cons,talent:originalTalent,trees'
@@ -370,11 +372,11 @@ export default class Avatar extends Base {
     }
   }
 
-  getArtisDetail (mysArtis = false) {
+  getArtisDetail(mysArtis = false) {
     return (mysArtis ? this.mysArtis : this.artis).getDetail()
   }
 
-  getMaterials () {
+  getMaterials() {
     return MysAvatar.getMaterials(this)
   }
 }

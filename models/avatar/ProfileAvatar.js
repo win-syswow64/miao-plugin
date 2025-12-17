@@ -13,7 +13,7 @@ const ProfileAvatar = {
    * @param force
    * @returns {Promise<boolean|number>}
    */
-  async refreshProfile (player, force = 2, fromMys = false) {
+  async refreshProfile(player, force = 2, fromMys = false) {
     if (!AvatarUtil.needRefresh(player._profile, force, { 0: 24, 1: 2, 2: 0 })) {
       return false
     }
@@ -29,12 +29,12 @@ const ProfileAvatar = {
     }
   },
 
-  isProfile (avatar) {
+  isProfile(avatar) {
     if (avatar.isSr) {
       return true
     }
     // 检查数据源
-    if (!avatar._source || !['enka', 'change', 'miao', 'mgg', 'hutao', 'homo', 'mysPanel'].includes(avatar._source)) {
+    if (!avatar._source || !['enka', 'change', 'miao', 'mgg', 'hutao', 'homo', 'mysPanel', 'customize', 'share'].includes(avatar._source)) {
       return false
     }
     // 检查武器及天赋
@@ -52,7 +52,7 @@ const ProfileAvatar = {
     return true
   },
 
-  getCostumeSplash (profile, game = 'gs') {
+  getCostumeSplash(profile, game = 'gs') {
     let { char, id, name } = profile
     if (!Cfg.get('costumeSplash', true)) {
       return char.getImgs(profile._costume).splash
@@ -76,7 +76,7 @@ const ProfileAvatar = {
       isSuper = true
     }
 
-    let treeSet = ['101', '102', '103', '201', '202', '203', '204', '205', '206', '207', '208', '209', '210','301','302']
+    let treeSet = ['101', '102', '103', '201', '202', '203', '204', '205', '206', '207', '208', '209', '210', '301', '302']
     let treeSuper = false
     if (!isGs && profile.trees) {
       treeSuper = true
@@ -119,7 +119,7 @@ const ProfileAvatar = {
     }
   },
 
-  getServ (uid, game = 'gs') {
+  getServ(uid, game = 'gs') {
     return Serv.getServ(uid, game)
   }
 }
