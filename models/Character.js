@@ -57,6 +57,9 @@ class Character extends Base {
     if (this.isCustom) {
       return false
     }
+    if (Cfg.get('notReleasedData')) {
+      return true
+    }
     if (this.eta) {
       return this.eta * 1 < new Date() * 1
     }

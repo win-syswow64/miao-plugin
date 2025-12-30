@@ -5,13 +5,13 @@ import moment from 'moment'
 import { miaoPath } from '#miao.path'
 
 let Avatar = {
-  render (e) {
+  render(e) {
     if (!e.char) {
       return false
     }
     return Avatar.renderAvatar(e, e.char?.name)
   },
-  async renderAvatar (e, avatar, renderType = 'card') {
+  async renderAvatar(e, avatar, renderType = 'card') {
     // 如果传递的是名字，则获取
     if (typeof (avatar) === 'string') {
       // 检查角色
@@ -36,7 +36,7 @@ let Avatar = {
     return await Avatar.renderCard(e, avatar, renderType)
   },
 
-  async renderCard (e, avatar, renderType = 'card') {
+  async renderCard(e, avatar, renderType = 'card') {
     let char = Character.get(avatar.id)
     if (!char) {
       return false
@@ -58,7 +58,7 @@ let Avatar = {
       data = avatar.getDetail()
       data.imgs = char.imgs
       data.source = avatar._source
-      data.artis = avatar.getArtisDetail(true)
+      data.artis = avatar.getArtisDetail(!avatar.hasArtis())
       data.updateTime = moment(new Date(avatar._time)).format('MM-DD HH:mm')
       if (data.hasTalent) {
         data.talent = avatar.talent
@@ -106,7 +106,7 @@ let Avatar = {
     }
     return true
   },
-  check (e) {
+  check(e) {
     let msg = e.original_msg || e.msg
     if (!msg || !/^#/.exec(msg)) {
       return false

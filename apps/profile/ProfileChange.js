@@ -20,7 +20,7 @@ const ProfileChange = {
    * @param msg
    * @returns {{}}
    */
-  matchMsg (msg) {
+  matchMsg(msg) {
     if (!/(变|改|换)/.test(msg)) {
       return false
     }
@@ -41,24 +41,24 @@ const ProfileChange = {
     const isGs = game === 'gs'
     const keyMap = isGs
       ? {
-          artis: '圣遗物',
-          arti1: '花,生之花',
-          arti2: '毛,羽,羽毛,死之羽',
-          arti3: '沙,沙漏,表,时之沙',
-          arti4: '杯,杯子,空之杯',
-          arti5: '头,冠,理之冠,礼冠,帽子,帽',
-          weapon: '武器'
-        }
+        artis: '圣遗物',
+        arti1: '花,生之花',
+        arti2: '毛,羽,羽毛,死之羽',
+        arti3: '沙,沙漏,表,时之沙',
+        arti4: '杯,杯子,空之杯',
+        arti5: '头,冠,理之冠,礼冠,帽子,帽',
+        weapon: '武器'
+      }
       : {
-          artis: '圣遗物,遗器',
-          arti1: '头,帽子,头部',
-          arti2: '手,手套,手部',
-          arti3: '衣,衣服,甲,躯干,',
-          arti4: '鞋,靴,鞋子,靴子,脚,脚部',
-          arti5: '球,位面球',
-          arti6: '绳,线,链接绳,连接绳',
-          weapon: '武器,光锥'
-        }
+        artis: '圣遗物,遗器',
+        arti1: '头,帽子,头部',
+        arti2: '手,手套,手部',
+        arti3: '衣,衣服,甲,躯干,',
+        arti4: '鞋,靴,鞋子,靴子,脚,脚部',
+        arti5: '球,位面球',
+        arti6: '绳,线,链接绳,连接绳',
+        weapon: '武器,光锥'
+      }
     let keyTitleMap = {}
     lodash.forEach(keyMap, (val, key) => {
       lodash.forEach(val.split(','), (v) => {
@@ -209,7 +209,7 @@ const ProfileChange = {
    * @param game
    * @returns {Avatar|boolean}
    */
-  getProfile (uid, charid, ds, game = 'gs') {
+  getProfile(uid, charid, ds, game = 'gs') {
     if (!charid) {
       return false
     }
@@ -304,7 +304,7 @@ const ProfileChange = {
       if (artis[idx] && ds.artisSet && ds.artisSet[artisIdx]) {
         let as = ArtifactSet.get(ds.artisSet[artisIdx], game)
         if (as) {
-          artis[idx].id = as.getArti(idx)?.getIdByStar(artis[idx].star || 5)
+          artis[idx].id = as.getArti(idx) && as.getArti(idx).getIdByStar(artis[idx].star || 5)
           artis[idx].name = as.getArtiName(idx)
           artis[idx].set = as.name
         }
